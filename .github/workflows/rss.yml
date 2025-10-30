@@ -22,8 +22,17 @@ jobs:
       - name: Install dependencies
         run: pip install requests beautifulsoup4 lxml
 
-      - name: Run scraper
-        run: python scrape_audible.py
+      - name: Run scraper and prepare output
+        run: |
+          python scrape_audible.py
+          mkdir public
+          mv feed.xml public/
 
-      # 👇 key fix: ensure gh-pages branch and correct folder
-      - name: Deploy feed.xml to Git
+      - name: Deploy to GitHub Pages (create gh-pages branch if missing)
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          force_orphan: true
+          commit_message: "Deploy RSS feed"
